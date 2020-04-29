@@ -66,8 +66,5 @@ class ModelData(factory.LazyFunction):
                 Model = Pool().get(data.model)
                 return Model(data.db_id)
             except ValueError:
-                # In test environment there is no model data
-                # Factory which is calling this lazy function
-                # must set this property in test environment
                 return None
         super(ModelData, self).__init__(function, *args, **kwargs)
