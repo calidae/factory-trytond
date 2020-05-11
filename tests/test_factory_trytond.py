@@ -84,47 +84,100 @@ class FactoryTrytondTestCase(unittest.TestCase):
 
     @with_transaction()
     def test_subfactory_create(self):
-        """Create an object with a parent from a SubFactory."""
-        ModelChild = Pool().get('test.model_child')
+        """Create an object with a related parent."""
+        Model = Pool().get('test.mptt')
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
-                model = 'test.model_parent'
-            name = factory.Faker('word')
+                model = 'test.mptt'
+            name = 'Parent'
 
         class ModelChildFactory(factory_trytond.TrytonFactory):
             class Meta:
-                model = 'test.model_child'
-            name = factory.Faker('word')
+                model = 'test.mptt'
+            name = 'Child'
             parent = factory.SubFactory(ModelFactory)
-        
+
         model_child = ModelChildFactory.create()
-        
+
         self.assertEqual(
-            ModelChild.search([]),
+            Model.search([('name', '=', 'Child')]),
             [model_child]
         )
-
+        
     @with_transaction()
     def test_subfactory_batch(self):
-        """Create multiple objects, each with a parent from a SubFactory."""
-        ModelChild = Pool().get('test.model_child')
+        """Create multiple objects with a related parent."""
+        Model = Pool().get('test.mptt')
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
-                model = 'test.model_parent'
-            name = factory.Faker('word')
+                model = 'test.mptt'
+            name = 'Parent'
 
         class ModelChildFactory(factory_trytond.TrytonFactory):
             class Meta:
-                model = 'test.model_child'
-            name = factory.Faker('word')
+                model = 'test.mptt'
+            name = 'Child'
             parent = factory.SubFactory(ModelFactory)
 
         model_childs = []
-        model_childs.extend(ModelChildFactory.create_batch(5))
+        model_childs.extend(ModelChildFactory.create_batch(3))
 
         self.assertEqual(
-            ModelChild.search([]),
+            Model.search([('name', '=', 'Child')]),
             model_childs
+        )
+
+    @with_transaction()
+    def test_relatedfactorylist_create(self):
+        """Create an object with related childs."""
+        Model = Pool().get('test.mptt')
+
+        class ModelChildFactory(factory_trytond.TrytonFactory):
+            class Meta:
+                model = 'test.mptt'
+            name = 'Child'
+        class ModelFactory(factory_trytond.TrytonFactory):
+            class Meta:
+                model = 'test.mptt'
+            name = 'Parent'
+            childs = factory.RelatedFactoryList(
+                ModelChildFactory,
+                factory_related_name='parent',
+                size=2
+            )
+
+        model = ModelFactory.create()
+
+        self.assertEqual(
+            Model.search([('name', '=', 'Parent')]),
+            [model]
+        )
+
+    @with_transaction()
+    def test_relatedfactorylist_batch(self):
+        """Create multiple objects with related childs."""
+        Model = Pool().get('test.mptt')
+
+        class ModelChildFactory(factory_trytond.TrytonFactory):
+            class Meta:
+                model = 'test.mptt'
+            name = 'Child'
+        class ModelFactory(factory_trytond.TrytonFactory):
+            class Meta:
+                model = 'test.mptt'
+            name = 'Parent'
+            childs = factory.RelatedFactoryList(
+                ModelChildFactory,
+                factory_related_name='parent',
+                size=2
+            )
+
+        models = []
+        models.extend(ModelFactory.create_batch(3))
+
+        self.assertEqual(
+            Model.search([('name', '=', 'Parent')]),
+            models
         )
