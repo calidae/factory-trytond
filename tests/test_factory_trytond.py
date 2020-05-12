@@ -31,7 +31,7 @@ class FactoryTrytondTestCase(unittest.TestCase):
             Model.search([]),
             [model]
         )
-    
+
     @with_transaction()
     def test_create_set_attribute(self):
         """Create an object with a given name."""
@@ -138,7 +138,6 @@ class FactoryTrytondTestCase(unittest.TestCase):
                 model = 'test.mptt'
             name = 'Child'
         class ModelFactory(factory_trytond.TrytonFactory):
-
             class Meta:
                 model = 'test.mptt'
             name = 'Parent'
@@ -165,7 +164,6 @@ class FactoryTrytondTestCase(unittest.TestCase):
                 model = 'test.mptt'
             name = 'Child'
         class ModelFactory(factory_trytond.TrytonFactory):
-
             class Meta:
                 model = 'test.mptt'
             name = 'Parent'
