@@ -150,7 +150,7 @@ class FactoryTrytondTestCase(unittest.TestCase):
 
         model = ModelFactory.create()
 
-        self.assertEqual(
+        self.assertNotEqual(
             Model.search([('name', '=', 'Parent')]),
             [model]
         )
