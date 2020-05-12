@@ -1,2 +1,2 @@
 trytond
-factory
+factory_boy
