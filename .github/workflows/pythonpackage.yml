@@ -28,7 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade pip setuptools wheel
         pip install flake8 pytest
-        pip install 
+        pip install tox
     - name: pyscopg2 prerequisites
       run: sudo apt-get install python-dev libpq-dev
     # - name: Lint with flake8
