@@ -137,8 +137,8 @@ class FactoryTrytondTestCase(unittest.TestCase):
             class Meta:
                 model = 'test.mptt'
             name = 'Child'
-        class ModelFactory(factory_trytond.TrytonFactory):
 
+        class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
                 model = 'test.mptt'
             name = 'Parent'
@@ -164,8 +164,8 @@ class FactoryTrytondTestCase(unittest.TestCase):
             class Meta:
                 model = 'test.mptt'
             name = 'Child'
-        class ModelFactory(factory_trytond.TrytonFactory):
 
+        class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
                 model = 'test.mptt'
             name = 'Parent'
