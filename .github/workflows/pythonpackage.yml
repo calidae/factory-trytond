@@ -42,8 +42,8 @@ jobs:
         pip install trytond
         pip install flake8 pytest
         pip install tox
-    - name: pyscopg2 prerequisites
-      run: sudo apt-get install python-dev libpq-dev
+    # - name: pyscopg2 prerequisites
+    #   run: sudo apt-get install python-dev libpq-dev
     # - uses: harmon758/postgresql-action@v1
     #   with:
     #     postgresql version: '11'
