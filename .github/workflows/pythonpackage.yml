@@ -43,7 +43,7 @@ jobs:
         pip install flake8 pytest
         pip install tox
         # export TRYTOND_DATABASE_URI=postgresql://postgres:postgres@localhost:5432/github_actions
-        export TRYTOND_DATABASE_URI=jdbc:postgresql://postgres:postgreslocalhost:5432/github_actions
+        export TRYTOND_DATABASE_URI=jdbc:postgresql://postgres:postgres@localhost:5432/github_actions
         echo $TRYTOND_DATABASE_URI
         docker ps
     # - name: pyscopg2 prerequisites
