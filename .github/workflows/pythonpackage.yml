@@ -45,6 +45,7 @@ jobs:
         export TRYTOND_DATABASE_URI=postgresql://postgres:postgres@localhost:5432/github_actions
         echo $TRYTOND_DATABASE_URI
         docker ps
+        service postgresql status
     # - name: pyscopg2 prerequisites
     #   run: sudo apt-get install python-dev libpq-dev
     # - uses: harmon758/postgresql-action@v1
