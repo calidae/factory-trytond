@@ -26,15 +26,16 @@ class FactoryTrytondTestCase(unittest.TestCase):
             name = factory.Faker('word')
 
         model = ModelFactory.create()
-
+            
         self.assertEqual(
             Model.search([]),
             [model]
         )
-
+    
     @with_transaction()
     def test_create_set_attribute(self):
         """Create an object with a given name."""
+        Model = Pool().get('test.model')
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -57,12 +58,12 @@ class FactoryTrytondTestCase(unittest.TestCase):
 
         models = []
         models.extend(ModelFactory.create_batch(5))
-
+            
         self.assertEqual(
             Model.search([]),
             models
         )
-
+    
     @with_transaction()
     def test_create_batch_set_attribute(self):
         """Create multiple objects with a given name."""
@@ -75,7 +76,7 @@ class FactoryTrytondTestCase(unittest.TestCase):
 
         models = []
         models.extend(ModelFactory.create_batch(5, name='Foo'))
-
+            
         self.assertEqual(
             Model.search([]),
             models
@@ -103,7 +104,7 @@ class FactoryTrytondTestCase(unittest.TestCase):
             Model.search([('name', '=', 'Child')]),
             [model_child]
         )
-
+        
     @with_transaction()
     def test_subfactory_batch(self):
         """Create multiple objects with a related parent."""
@@ -137,7 +138,6 @@ class FactoryTrytondTestCase(unittest.TestCase):
             class Meta:
                 model = 'test.mptt'
             name = 'Child'
-
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
                 model = 'test.mptt'
