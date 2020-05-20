@@ -1,6 +1,6 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-# test
+
 name: Python package
 
 on:
@@ -10,9 +10,22 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+
+  test-postgresql:
 
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  
     strategy:
       matrix:
         python-version: [3.5, 3.6, 3.7, 3.8]
@@ -23,17 +36,54 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install Tox and any other packages
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
+        python -m pip install --upgrade pip setuptools wheel
+        pip install tox
+    - name: Run tox
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
+        export TRYTOND_DATABASE_URI=postgresql://postgres:postgres@localhost:5432/github_actions
+        tox -e py${{ matrix.python-version }}-postgresql
+
+  test-sqlite:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.5, 3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Tox and any other packages
       run: |
-        pytest
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade pip setuptools wheel
+        pip install tox
+    - name: Run tox
+      run: |
+        tox -e py${{ matrix.python-version }}-sqlite
+
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.8'
+    - name: Install Tox and any other packages
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade pip setuptools wheel
+        pip install tox
+    - name: Run tox
+      run: |
+        tox -e linters
