@@ -51,4 +51,4 @@ jobs:
     - name: Run tox
       run: |
         export TRYTOND_DATABASE_URI=postgresql://postgres:postgres@0.0.0.0:5432/github_actions
-        tox -e py3.7-postgresql
+        tox -e py3.8-postgresql
