@@ -4,14 +4,14 @@ Factory-trytond is a [factory_boy](https://factoryboy.readthedocs.io/en/latest/i
 
 ## How does it work?
 
-To use Factory-trytond your factory class only has to inherit the TrytonFactory:
+To use Factory-trytond your factory class only has to inherit the TrytonFactory class:
 
     import factory_trytond
 
     class SaleFactory(factory_trytond.TrytonFactory):
 
 Once we have inherited the class, we can start configuring our factory like we would do with factory_boy (e.g: define the class the factory is referring to, the fields the factory has to work with).
-Here's an example with Tryton's model Sale:
+Here's an example with Tryton's model **Sale**:
 
     import factory
     import factory_trytond
