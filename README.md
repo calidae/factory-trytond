@@ -11,7 +11,7 @@ Steps to use Factory-trytond:
 >Note that the meta model can be a *trytond pool model name*.
 
 Here's a factory example with Tryton's model **User**:
-```
+```python
 import factory
 import factory_trytond
 
