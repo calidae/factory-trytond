@@ -47,28 +47,28 @@ jobs:
 #         export TRYTOND_DATABASE_URI=postgresql://postgres:postgres@localhost:5432/github_actions
 #         tox -e py${{ matrix.python-version }}-postgresql
 
-#   test-sqlite:
+  test-sqlite:
 
-#     runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-#     strategy:
-#       matrix:
-#         python-version: [3.5, 3.6, 3.7, 3.8]
+    strategy:
+      matrix:
+        python-version: [3.5, 3.6, 3.7, 3.8]
 
-#     steps:
-#     - uses: actions/checkout@v2
-#     - name: Set up Python ${{ matrix.python-version }}
-#       uses: actions/setup-python@v1
-#       with:
-#         python-version: ${{ matrix.python-version }}
-#     - name: Install Tox and any other packages
-#       run: |
-#         python -m pip install --upgrade pip
-#         python -m pip install --upgrade pip setuptools wheel
-#         pip install tox
-#     - name: Run tox
-#       run: |
-#         tox -e py${{ matrix.python-version }}-sqlite
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Tox and any other packages
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade pip setuptools wheel
+        pip install tox
+    - name: Run tox
+      run: |
+        tox -e py${{ matrix.python-version }}-sqlite
 
   lint:
 
