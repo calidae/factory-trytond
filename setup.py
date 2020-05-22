@@ -11,6 +11,7 @@ setup(
     version="0.1.1",
     author="Calidae",
     author_email="dev@calidae.com",
+    description="Factory Boy - Trytond integration",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/calidae/factory-trytond",
