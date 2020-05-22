@@ -67,7 +67,7 @@ jobs:
         pip install tox
     - name: Run tox
       run: |
-      tox -e py${{ matrix.python-version }}-sqlite-trytond-5.0,py${{ matrix.python-version }}-sqlite-trytond-5.2,py${{ matrix.python-version }}-sqlite-trytond-5.4,py${{ matrix.python-version }}-sqlite-trytond-5.6,py${{ matrix.python-version }}-sqlite-trytond-latest
+        tox -e py${{ matrix.python-version }}-sqlite-trytond-5.0,py${{ matrix.python-version }}-sqlite-trytond-5.2,py${{ matrix.python-version }}-sqlite-trytond-5.4,py${{ matrix.python-version }}-sqlite-trytond-5.6,py${{ matrix.python-version }}-sqlite-trytond-latest
 
   lint:
 
