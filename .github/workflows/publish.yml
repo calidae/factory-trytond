@@ -17,4 +17,4 @@ jobs:
     - name: Prepare dist file
       run: python3 setup.py bdist_wheel
     - name: Publish dist on PyPI
-      run: twine upload --username=__token__  dist/*
+      run: python3 -m twine upload --username=__token__  dist/*
