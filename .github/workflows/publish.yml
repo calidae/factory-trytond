@@ -10,8 +10,8 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    - name: Install twine and 
     - uses: actions/checkout@v1
+    - name: Install twine and 
       run: |
         python3 -m pip install twine
         python3 -m pip install wheel
