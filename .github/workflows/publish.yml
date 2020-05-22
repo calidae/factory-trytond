@@ -18,4 +18,5 @@ jobs:
     - name: Prepare dist file
       run: python3 setup.py sdist bdist_wheel
     - name: Publish dist on PyPI
-      run: python3 -m twine upload --config-file .pypirc --repository testpypi dist/*
+    #   run: python3 -m twine upload --config-file .pypirc --repository testpypi dist/*
+      run: python3 -m twine upload --config-file .pypirc dist/*

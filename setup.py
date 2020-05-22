@@ -8,9 +8,23 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="factory_trytond",
-    version="0.1.0",
+    version="0.1.1",
+    author="Calidae",
+    author_email="dev@calidae.com",
     long_description=README,
     long_description_content_type="text/markdown",
+    url="https://github.com/calidae/factory-trytond",
     packages=find_packages("factory_trytond"),
-    install_requires=["factory_boy", "trytond"]
+    install_requires=["factory_boy", "trytond"],
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    python_requires=[
+        '3.5',
+        '3.6',
+        '3.7',
+        '3.8',
+    ],
 )
