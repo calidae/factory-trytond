@@ -17,6 +17,7 @@ jobs:
     - name: Prepare dist file
       run: python3 setup.py bdist_wheel
     - name: Publish dist on PyPI
-      run: |
-        export TWINE_USERNAME=__token__
-        python3 -m twine upload --non-interactive dist/*
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+      run: python3 -m twine upload --non-interactive dist/*

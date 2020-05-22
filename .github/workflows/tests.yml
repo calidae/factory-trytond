@@ -42,8 +42,9 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install tox
     - name: Run tox
+      env:
+        TRYTOND_DATABASE_URI: postgresql://postgres:postgres@localhost:5432/github_actions
       run: |
-        export TRYTOND_DATABASE_URI=postgresql://postgres:postgres@localhost:5432/github_actions
         tox -e py${{ matrix.python-version }}-postgresql-trytond-5.0,py${{ matrix.python-version }}-postgresql-trytond-5.2,py${{ matrix.python-version }}-postgresql-trytond-5.4,py${{ matrix.python-version }}-postgresql-trytond-5.6,py${{ matrix.python-version }}-postgresql-trytond-latest
 
   test-sqlite:
