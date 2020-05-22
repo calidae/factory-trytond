@@ -15,6 +15,6 @@ jobs:
         python3 -m pip install twine
         python3 -m pip install wheel
     - name: Prepare dist file
-      run: python3 setup.py sdist bdist_wheel
+      run: python3 ./setup.py sdist bdist_wheel
     - name: Publish dist on PyPI
       run: python3 -m twine upload --repository testpypi dist/*
