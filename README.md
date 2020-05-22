@@ -9,7 +9,7 @@ Steps to use Factory-trytond:
 1. Inherit the base factory class.
 2. Define the meta model the factory will construct.
 3. Define the default declarations of the factory.
->Note that the meta model can be a *trytond pool model name*.
+>**Note that the meta model can be a *trytond pool model name*.**
 
 Here's a factory example with Tryton's model **User**:
 ```python
