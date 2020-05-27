@@ -15,7 +15,7 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/calidae/factory-trytond",
-    packages=find_packages("factory_trytond"),
+    packages=find_packages(),
     install_requires=["factory_boy", "trytond"],
     classifiers=[
         "Framework :: Tryton",
