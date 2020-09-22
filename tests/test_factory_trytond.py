@@ -1,4 +1,4 @@
-import unittest
+import unittest.mock
 
 import factory
 
@@ -16,21 +16,29 @@ class FactoryTrytondTestCase(unittest.TestCase):
         activate_module('tests')
 
     @with_transaction()
-    def test_create_faker(self):
-        """Create an object with an auto-generated name."""
+    def test_named_metamodel(self):
+        """Declare a factory declaring the meta-model by name"""
         Model = Pool().get('test.model')
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
                 model = 'test.model'
-            name = factory.Faker('word')
 
-        model = ModelFactory.create()
+        record = ModelFactory.create()
 
-        self.assertEqual(
-            Model.search([]),
-            [model]
-        )
+        self.assertEqual(Model.search([]), [record])
+
+    @with_transaction()
+    def test_build(self):
+        """Test that build strategy won't persist records"""
+        Model = Pool().get('test.model')
+
+        class ModelFactory(factory_trytond.TrytonFactory):
+            class Meta:
+                model = 'test.model'
+
+        ModelFactory.build()
+        self.assertFalse(Model.search([]))
 
     @with_transaction()
     def test_create_set_attribute(self):
@@ -39,11 +47,9 @@ class FactoryTrytondTestCase(unittest.TestCase):
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
                 model = 'test.model'
-            name = factory.Faker('word')
 
-        model = ModelFactory.create(name='Foo')
-
-        self.assertEqual(model.name, 'Foo')
+        record = ModelFactory.create(name='foo')
+        self.assertEqual(record.name, 'foo')
 
     @with_transaction()
     def test_create_batch_faker(self):
@@ -55,13 +61,9 @@ class FactoryTrytondTestCase(unittest.TestCase):
                 model = 'test.model'
             name = factory.Faker('word')
 
-        models = []
-        models.extend(ModelFactory.create_batch(5))
+        records = ModelFactory.create_batch(5)
 
-        self.assertEqual(
-            Model.search([]),
-            models
-        )
+        self.assertEqual(Model.search([]), records)
 
     @with_transaction()
     def test_create_batch_set_attribute(self):
@@ -71,114 +73,28 @@ class FactoryTrytondTestCase(unittest.TestCase):
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
                 model = 'test.model'
-            name = factory.Faker('word')
 
-        models = []
-        models.extend(ModelFactory.create_batch(5, name='Foo'))
+        ModelFactory.create_batch(5, name=factory.Iterator(list('abcde')))
 
-        self.assertEqual(
-            Model.search([]),
-            models
+        self.assertCountEqual(
+            [record.name for record in Model.search([])],
+            list('abcde')
         )
 
     @with_transaction()
-    def test_subfactory_create(self):
-        """Create an object with a related parent."""
-        Model = Pool().get('test.mptt')
+    def test_on_change(self):
+        """Test that a factory classmethod on_change
+        will be called with the new instance"""
+
+        sentinel = unittest.mock.sentinel
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
-                model = 'test.mptt'
-            name = 'Parent'
+                model = 'test.model'
 
-        class ModelChildFactory(factory_trytond.TrytonFactory):
-            class Meta:
-                model = 'test.mptt'
-            name = 'Child'
-            parent = factory.SubFactory(ModelFactory)
+            @classmethod
+            def on_change(cls, obj):
+                sentinel.obj = obj
 
-        model_child = ModelChildFactory.create()
-
-        self.assertEqual(
-            Model.search([('name', '=', 'Child')]),
-            [model_child]
-        )
-
-    @with_transaction()
-    def test_subfactory_batch(self):
-        """Create multiple objects with a related parent."""
-        Model = Pool().get('test.mptt')
-
-        class ModelFactory(factory_trytond.TrytonFactory):
-            class Meta:
-                model = 'test.mptt'
-            name = 'Parent'
-
-        class ModelChildFactory(factory_trytond.TrytonFactory):
-            class Meta:
-                model = 'test.mptt'
-            name = 'Child'
-            parent = factory.SubFactory(ModelFactory)
-
-        model_childs = []
-        model_childs.extend(ModelChildFactory.create_batch(3))
-
-        self.assertEqual(
-            Model.search([('name', '=', 'Child')]),
-            model_childs
-        )
-
-    @with_transaction()
-    def test_relatedfactorylist_create(self):
-        """Create an object with related childs."""
-        Model = Pool().get('test.mptt')
-
-        class ModelChildFactory(factory_trytond.TrytonFactory):
-            class Meta:
-                model = 'test.mptt'
-            name = 'Child'
-
-        class ModelFactory(factory_trytond.TrytonFactory):
-            class Meta:
-                model = 'test.mptt'
-            name = 'Parent'
-            childs = factory.RelatedFactoryList(
-                ModelChildFactory,
-                factory_related_name='parent',
-                size=2
-            )
-
-        model = ModelFactory.create()
-
-        self.assertEqual(
-            Model.search([('name', '=', 'Parent')]),
-            [model]
-        )
-
-    @with_transaction()
-    def test_relatedfactorylist_batch(self):
-        """Create multiple objects with related childs."""
-        Model = Pool().get('test.mptt')
-
-        class ModelChildFactory(factory_trytond.TrytonFactory):
-            class Meta:
-                model = 'test.mptt'
-            name = 'Child'
-
-        class ModelFactory(factory_trytond.TrytonFactory):
-            class Meta:
-                model = 'test.mptt'
-            name = 'Parent'
-            childs = factory.RelatedFactoryList(
-                ModelChildFactory,
-                factory_related_name='parent',
-                size=2
-            )
-
-        models = []
-        models.extend(ModelFactory.create_batch(3))
-
-        self.assertEqual(
-            Model.search([('name', '=', 'Parent')]),
-            models
-        )
+        record = ModelFactory.create()
+        self.assertIs(sentinel.obj, record)
