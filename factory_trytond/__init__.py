@@ -14,8 +14,9 @@ class TrytonOptions(factory.base.FactoryOptions):
 
     def get_model_class(self):
         if not self.__active_database and Transaction().database:
-            self.model = Pool().get(self.model)
             self.__active_database = True
+        if self.__active_database and isinstance(self.model, str):
+            self.model = Pool().get(self.model)
         return super(TrytonOptions, self).get_model_class()
 
     def instantiate(self, step, args, kwargs):
@@ -24,6 +25,18 @@ class TrytonOptions(factory.base.FactoryOptions):
         if step.builder.strategy == factory.CREATE_STRATEGY:
             obj.save()
         return obj
+
+    # This allows static tryton factories to be inherited
+    def _get_counter_reference(self):
+        if (
+                self.model is not None
+                and self.base_factory is not None
+                and self.base_factory._meta.model is not None
+                and (self.model == self.base_factory._meta.model)
+        ):
+            return self.base_factory._meta.counter_reference
+        else:
+            return self
 
 
 class TrytonFactory(factory.Factory):

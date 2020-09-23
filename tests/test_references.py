@@ -162,10 +162,7 @@ class ReferencesTestCase(unittest.TestCase):
             origin = factory.SubFactory(OriginFactory)
             target = factory.SubFactory(TargetFactory)
 
-        class OriginWithTargetsFactory(factory_trytond.TrytonFactory):
-            class Meta:
-                model = 'test.many2many'
-
+        class OriginWithTargetsFactory(OriginFactory):
             relation1 = factory.RelatedFactory(
                 RelationFactory,
                 factory_related_name='origin',
