@@ -8,7 +8,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="factory_trytond",
-    version="0.1.2",
+    version="0.2.0",
     author="Calidae",
     author_email="dev@calidae.com",
     description="Factory Boy - Trytond integration",
