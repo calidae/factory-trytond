@@ -58,10 +58,11 @@ class TrytonFactory(factory.Factory):
         pass
 
 
-class LazySearch(factory.LazyFunction):
-    def __init__(self, model_name, domain, limit=None, *args, **kwargs):
-        def search():
+class LazySearch(factory.LazyAttribute):
+    def __init__(self, model_name, function, limit=None, *args, **kwargs):
+        def search(stub):
             Model = Pool().get(model_name)
+            domain = function(stub)
             records = Model.search(domain, limit=limit)
             return random.choice(records) if records else None
         super(LazySearch, self).__init__(search, *args, **kwargs)
