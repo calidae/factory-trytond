@@ -9,6 +9,20 @@ from trytond.tests.test_tryton import with_transaction
 import factory_trytond
 
 
+class AbstractStaticFactory(factory_trytond.TrytonFactory):
+    class Meta:
+        abstract = True
+
+
+class StaticFactory(AbstractStaticFactory):
+    class Meta:
+        model = 'test.model'
+
+
+class InheritedStaticFactory(StaticFactory):
+    pass
+
+
 class FactoryTrytondTestCase(unittest.TestCase):
 
     @classmethod
@@ -16,17 +30,50 @@ class FactoryTrytondTestCase(unittest.TestCase):
         activate_module('tests')
 
     @with_transaction()
-    def test_named_metamodel(self):
-        """Declare a factory declaring the meta-model by name"""
+    def test_static_named_metamodel(self):
+        """Declare and inherit a static factory"""
+        Model = Pool().get('test.model')
+
+        record1 = StaticFactory.create()
+        record2 = InheritedStaticFactory.create()
+
+        self.assertEqual(Model.search([]), [record1, record2])
+
+    @with_transaction()
+    def test_dynamic_named_metamodel(self):
+        """Declare and inherit a dynamic factory
+        declaring the meta-model by name"""
         Model = Pool().get('test.model')
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
                 model = 'test.model'
 
-        record = ModelFactory.create()
+        class InheritedModelFactory(ModelFactory):
+            pass
 
-        self.assertEqual(Model.search([]), [record])
+        record1 = ModelFactory.create()
+        record2 = InheritedModelFactory.create()
+
+        self.assertEqual(Model.search([]), [record1, record2])
+
+    @with_transaction()
+    def test_dynamic_pool_metamodel(self):
+        """Declare and inherit a dynamic factory
+        declaring the meta-model with a pool model"""
+        Model = Pool().get('test.model')
+
+        class ModelFactory(factory_trytond.TrytonFactory):
+            class Meta:
+                model = Model
+
+        class InheritedModelFactory(ModelFactory):
+            pass
+
+        record1 = ModelFactory.create()
+        record2 = InheritedModelFactory.create()
+
+        self.assertEqual(Model.search([]), [record1, record2])
 
     @with_transaction()
     def test_build(self):
