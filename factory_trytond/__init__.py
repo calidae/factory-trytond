@@ -58,6 +58,16 @@ class TrytonFactory(factory.Factory):
         pass
 
 
+class WizardFactory():
+
+    @classmethod
+    def create(cls, **kwargs):
+        Wizard = Pool().get(cls.Meta.model, type='wizard')
+        (session_id, _, _) = Wizard.create()
+        wizard = Wizard(session_id)
+        return wizard
+
+
 class LazySearch(factory.LazyAttribute):
     def __init__(self, model_name, function, limit=None, *args, **kwargs):
         def search(stub):
