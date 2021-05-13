@@ -172,11 +172,14 @@ class ReferencesTestCase(unittest.TestCase):
                 factory_related_name='origin',
             )
 
-        record = OriginFactory.create(
-            # TODO: test relation target names
-            # relation1__target__name='foo',
-            # relation2__target__name='bar',
+        record = OriginWithTargetsFactory.create(
+            relation1__target__name='foo',
+            relation2__target__name='bar',
         )
 
         self.assertCountEqual(Target.search([]), record.targets)
         self.assertCountEqual(Origin.search([]), [record])
+        self.assertCountEqual(
+            [t.name for t in record.targets],
+            ['foo', 'bar']
+        )
