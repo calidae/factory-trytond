@@ -28,7 +28,7 @@ jobs:
   
     strategy:
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -45,7 +45,7 @@ jobs:
       env:
         TRYTOND_DATABASE_URI: postgresql://postgres:postgres@localhost:5432/github_actions
       run: |
-        tox -e py${{ matrix.python-version }}-postgresql-trytond-5.0,py${{ matrix.python-version }}-postgresql-trytond-5.2,py${{ matrix.python-version }}-postgresql-trytond-5.4,py${{ matrix.python-version }}-postgresql-trytond-5.6,py${{ matrix.python-version }}-postgresql-trytond-latest
+        tox -e py${{ matrix.python-version }}-postgresql-trytond-5.0,py${{ matrix.python-version }}-postgresql-trytond-5.6,py${{ matrix.python-version }}-postgresql-trytond-5.8,py${{ matrix.python-version }}-postgresql-trytond-6.0,py${{ matrix.python-version }}-postgresql-trytond-dev
 
   test-sqlite:
 
@@ -53,7 +53,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -68,7 +68,7 @@ jobs:
         pip install tox
     - name: Run tox
       run: |
-        tox -e py${{ matrix.python-version }}-sqlite-trytond-5.0,py${{ matrix.python-version }}-sqlite-trytond-5.2,py${{ matrix.python-version }}-sqlite-trytond-5.4,py${{ matrix.python-version }}-sqlite-trytond-5.6,py${{ matrix.python-version }}-sqlite-trytond-latest
+        tox -e py${{ matrix.python-version }}-sqlite-trytond-5.0,py${{ matrix.python-version }}-sqlite-trytond-5.6,py${{ matrix.python-version }}-sqlite-trytond-5.8,py${{ matrix.python-version }}-sqlite-trytond-6.0,py${{ matrix.python-version }}-sqlite-trytond-dev
 
   lint:
 
@@ -76,10 +76,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.8
+    - name: Set up Python 3.9
       uses: actions/setup-python@v1
       with:
-        python-version: '3.8'
+        python-version: '3.9'
     - name: Install Tox and any other packages
       run: |
         python -m pip install --upgrade pip
