@@ -1,11 +1,13 @@
-# -*- coding: utf-8 -*-
-
 import random
+
 import factory
 import factory.base
 
 from trytond.pool import Pool
 from trytond.transaction import Transaction
+
+
+__version__ = '0.2.0'
 
 
 class TrytonOptions(factory.base.FactoryOptions):
