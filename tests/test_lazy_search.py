@@ -1,20 +1,12 @@
-import unittest
-
 import factory
-
-from trytond.tests.test_tryton import activate_module
-from trytond.tests.test_tryton import with_transaction
+import pytest
 
 import factory_trytond
 
 
-class LazySearchTestCase(unittest.TestCase):
+class TestLazySearch():
 
-    @classmethod
-    def setUpClass(cls):
-        activate_module('tests')
-
-    @with_transaction()
+    @pytest.mark.usefixtures('transaction')
     def test_lazy_search(self):
 
         class ModelFactory(factory_trytond.TrytonFactory):
@@ -37,5 +29,5 @@ class LazySearchTestCase(unittest.TestCase):
         bar = ModelFactory.create(name='bar')
         stubs = StubFactory.build_batch(10)
 
-        self.assertEqual([stub.first for stub in stubs], [foo1] * 10)
-        self.assertNotIn(bar, {stub.foo for stub in stubs})
+        assert [stub.first for stub in stubs] == [foo1] * 10
+        assert bar not in {stub.foo for stub in stubs}

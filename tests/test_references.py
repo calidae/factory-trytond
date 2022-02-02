@@ -1,24 +1,13 @@
-import unittest
-
 import factory
-
-from trytond.pool import Pool
-from trytond.tests.test_tryton import activate_module
-from trytond.tests.test_tryton import with_transaction
 
 import factory_trytond
 
 
-class ReferencesTestCase(unittest.TestCase):
+class TestReferences():
 
-    @classmethod
-    def setUpClass(cls):
-        activate_module('tests')
-
-    @with_transaction()
-    def test_many2one_subfactory_create(self):
+    def test_many2one_subfactory_create(self, pool):
         """Create a many2one relation with a subfactory"""
-        Target = Pool().get('test.many2one_target')
+        Target = pool.get('test.many2one_target')
 
         class TargetFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -31,13 +20,12 @@ class ReferencesTestCase(unittest.TestCase):
 
         record = OriginFactory.create(many2one__value=42)
 
-        self.assertCountEqual(Target.search([]), [record.many2one])
-        self.assertEqual(record.many2one.value, 42)
+        assert Target.search([]) == [record.many2one]
+        assert record.many2one.value == 42
 
-    @with_transaction()
-    def test_reference_subfactory_create(self):
+    def test_reference_subfactory_create(self, pool):
         """Create a reference relation with a subfactory"""
-        Target = Pool().get('test.reference.target')
+        Target = pool.get('test.reference.target')
 
         class TargetFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -50,13 +38,12 @@ class ReferencesTestCase(unittest.TestCase):
 
         record = OriginFactory.create(reference__name='foo')
 
-        self.assertCountEqual(Target.search([]), [record.reference])
-        self.assertEqual(record.reference.name, 'foo')
+        assert Target.search([]) == [record.reference]
+        assert record.reference.name == 'foo'
 
-    @with_transaction()
-    def test_one2many_relatedfactory_create(self):
+    def test_one2many_relatedfactory_create(self, pool):
         """Create a one2many related object."""
-        Target = Pool().get('test.one2many.target')
+        Target = pool.get('test.one2many.target')
 
         class TargetFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -75,17 +62,13 @@ class ReferencesTestCase(unittest.TestCase):
             )
         record = OriginFactory.create(target__name='foo')
 
-        self.assertTrue(record.targets)
-        self.assertCountEqual(Target.search([]), record.targets)
-        self.assertCountEqual(
-            [target.name for target in record.targets],
-            ['foo']
-        )
+        assert record.targets
+        assert Target.search([]) == list(record.targets)
+        assert [target.name for target in record.targets] == ['foo']
 
-    @with_transaction()
-    def test_one2many_relatedfactorylist_create(self):
+    def test_one2many_relatedfactorylist_create(self, pool):
         """Create an object with one2many objects."""
-        Target = Pool().get('test.one2many.target')
+        Target = pool.get('test.one2many.target')
 
         class TargetFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -101,17 +84,13 @@ class ReferencesTestCase(unittest.TestCase):
             )
         record = OriginFactory.create(targets__name='foo')
 
-        self.assertCountEqual(Target.search([]), record.targets)
-        self.assertCountEqual(
-            [target.name for target in record.targets],
-            ['foo']
-        )
+        assert Target.search([]) == list(record.targets)
+        assert [target.name for target in record.targets] == ['foo']
 
-    @with_transaction()
-    def test_many2many_postdeclaration_create(self):
+    def test_many2many_postdeclaration_create(self, pool):
         """Create objects with many2many relations with a post-declaration"""
-        Target = Pool().get('test.many2many.target')
-        Origin = Pool().get('test.many2many')
+        Target = pool.get('test.many2many.target')
+        Origin = pool.get('test.many2many')
 
         class TargetFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -132,20 +111,16 @@ class ReferencesTestCase(unittest.TestCase):
 
         record = OriginFactory.create(targets__name='foo')
 
-        self.assertCountEqual(Target.search([]), record.targets)
-        self.assertCountEqual(Origin.search([]), [record])
-        self.assertCountEqual(
-            [t.name for t in record.targets],
-            ['foo'] * 2
-        )
+        assert Target.search([]) == list(record.targets)
+        assert Origin.search([]) == [record]
+        assert [t.name for t in record.targets] == ['foo'] * 2
 
-    @with_transaction()
-    def test_many2many_n_relatedfactory_create(self):
+    def test_many2many_n_relatedfactory_create(self, pool):
         """Create objects with many2many relations through
         multiple relatedfactory declarations for the relation model
         """
-        Target = Pool().get('test.many2many.target')
-        Origin = Pool().get('test.many2many')
+        Target = pool.get('test.many2many.target')
+        Origin = pool.get('test.many2many')
 
         class TargetFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -177,9 +152,6 @@ class ReferencesTestCase(unittest.TestCase):
             relation2__target__name='bar',
         )
 
-        self.assertCountEqual(Target.search([]), record.targets)
-        self.assertCountEqual(Origin.search([]), [record])
-        self.assertCountEqual(
-            [t.name for t in record.targets],
-            ['foo', 'bar']
-        )
+        assert Target.search([]) == sorted(record.targets)
+        assert Origin.search([]) == [record]
+        assert [t.name for t in record.targets] == ['bar', 'foo']
