@@ -1,10 +1,7 @@
 import unittest.mock
 
 import factory
-
-from trytond.pool import Pool
-from trytond.tests.test_tryton import activate_module
-from trytond.tests.test_tryton import with_transaction
+import pytest
 
 import factory_trytond
 
@@ -23,27 +20,21 @@ class InheritedStaticFactory(StaticFactory):
     pass
 
 
-class FactoryTrytondTestCase(unittest.TestCase):
+class TestFactoryTrytond():
 
-    @classmethod
-    def setUpClass(cls):
-        activate_module('tests')
-
-    @with_transaction()
-    def test_static_named_metamodel(self):
+    def test_static_named_metamodel(self, pool):
         """Declare and inherit a static factory"""
-        Model = Pool().get('test.model')
+        Model = pool.get('test.model')
 
         record1 = StaticFactory.create()
         record2 = InheritedStaticFactory.create()
 
-        self.assertEqual(Model.search([]), [record1, record2])
+        assert Model.search([]) == [record1, record2]
 
-    @with_transaction()
-    def test_dynamic_named_metamodel(self):
+    def test_dynamic_named_metamodel(self, pool):
         """Declare and inherit a dynamic factory
         declaring the meta-model by name"""
-        Model = Pool().get('test.model')
+        Model = pool.get('test.model')
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -55,13 +46,12 @@ class FactoryTrytondTestCase(unittest.TestCase):
         record1 = ModelFactory.create()
         record2 = InheritedModelFactory.create()
 
-        self.assertEqual(Model.search([]), [record1, record2])
+        assert Model.search([]) == [record1, record2]
 
-    @with_transaction()
-    def test_dynamic_pool_metamodel(self):
+    def test_dynamic_pool_metamodel(self, pool):
         """Declare and inherit a dynamic factory
         declaring the meta-model with a pool model"""
-        Model = Pool().get('test.model')
+        Model = pool.get('test.model')
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -73,21 +63,20 @@ class FactoryTrytondTestCase(unittest.TestCase):
         record1 = ModelFactory.create()
         record2 = InheritedModelFactory.create()
 
-        self.assertEqual(Model.search([]), [record1, record2])
+        assert Model.search([]) == [record1, record2]
 
-    @with_transaction()
-    def test_build(self):
+    def test_build(self, pool):
         """Test that build strategy won't persist records"""
-        Model = Pool().get('test.model')
+        Model = pool.get('test.model')
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
                 model = 'test.model'
 
         ModelFactory.build()
-        self.assertFalse(Model.search([]))
+        assert not Model.search([])
 
-    @with_transaction()
+    @pytest.mark.usefixtures('transaction')
     def test_create_set_attribute(self):
         """Create an object with a given name."""
 
@@ -96,12 +85,11 @@ class FactoryTrytondTestCase(unittest.TestCase):
                 model = 'test.model'
 
         record = ModelFactory.create(name='foo')
-        self.assertEqual(record.name, 'foo')
+        assert record.name == 'foo'
 
-    @with_transaction()
-    def test_create_batch_faker(self):
+    def test_create_batch_faker(self, pool):
         """Create multiple objects with auto-generated names."""
-        Model = Pool().get('test.model')
+        Model = pool.get('test.model')
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -110,12 +98,11 @@ class FactoryTrytondTestCase(unittest.TestCase):
 
         records = ModelFactory.create_batch(5)
 
-        self.assertEqual(Model.search([]), records)
+        assert Model.search([]) == records
 
-    @with_transaction()
-    def test_create_batch_set_attribute(self):
+    def test_create_batch_set_attribute(self, pool):
         """Create multiple objects with a given name."""
-        Model = Pool().get('test.model')
+        Model = pool.get('test.model')
 
         class ModelFactory(factory_trytond.TrytonFactory):
             class Meta:
@@ -123,12 +110,9 @@ class FactoryTrytondTestCase(unittest.TestCase):
 
         ModelFactory.create_batch(5, name=factory.Iterator(list('abcde')))
 
-        self.assertCountEqual(
-            [record.name for record in Model.search([])],
-            list('abcde')
-        )
+        assert [record.name for record in Model.search([])] == list('abcde')
 
-    @with_transaction()
+    @pytest.mark.usefixtures('transaction')
     def test_on_change(self):
         """Test that a factory classmethod on_change
         will be called with the new instance"""
@@ -144,4 +128,4 @@ class FactoryTrytondTestCase(unittest.TestCase):
                 sentinel.obj = obj
 
         record = ModelFactory.create()
-        self.assertIs(sentinel.obj, record)
+        assert sentinel.obj is record
