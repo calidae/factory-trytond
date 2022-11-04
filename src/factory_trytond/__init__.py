@@ -7,7 +7,7 @@ from trytond.pool import Pool
 from trytond.transaction import Transaction
 
 
-__version__ = '0.2.0'
+__version__ = '1.0.0'
 
 
 class TrytonOptions(factory.base.FactoryOptions):

@@ -17,12 +17,12 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install Tox and any other packages
@@ -31,19 +31,21 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install tox
     - name: Run tox
+      env:
+        TOX_SKIP_ENV: "^((?!py${{ matrix.py }}).)*$"
       run: |
-        tox -e py${{ matrix.python-version }}-trytond-5.0,py${{ matrix.python-version }}-trytond-5.6,py${{ matrix.python-version }}-trytond-5.8,py${{ matrix.python-version }}-trytond-6.0,py${{ matrix.python-version }}-trytond-6.2,py${{ matrix.python-version }}-trytond-dev
+        tox --skip-missing-interpreters true  # FIXME https://stackoverflow.com/q/70955457
 
   lint:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: "3.11"
     - name: Install Tox and any other packages
       run: |
         python -m pip install --upgrade pip
